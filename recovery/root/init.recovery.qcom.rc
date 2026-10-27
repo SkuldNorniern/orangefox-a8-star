@@ -1,0 +1,59 @@
+on init
+    # configfs USB gadget on the DWC3 controller (adb + MTP)
+    setprop sys.usb.controller a800000.dwc3
+    setprop sys.usb.configfs 1
+
+on fs && property:sys.usb.configfs=1
+    # Kernel f_mtp (CONFIG_USB_CONFIGFS_F_MTP) -> /dev/mtp_usb, which TWRP's
+    # MtpServer opens. Recovery init.rc only creates ffs.adb/ffs.fastboot.
+    mkdir /config/usb_gadget/g1/functions/mtp.gs0
+    write /config/usb_gadget/g1/idVendor 0x04E8
+    # 4.4.78 oopses in __ffs_func_bind_do_os_desc when adbd's MS OS
+    # descriptors bind to a config not linked into os_desc (kernel BUG in init
+    # at UDC write, ~11 s, hard reset). Set it up like TWRP 3.2.3 does.
+    write /config/usb_gadget/g1/os_desc/use 1
+    write /config/usb_gadget/g1/os_desc/b_vendor_code 0x1
+    write /config/usb_gadget/g1/os_desc/qw_sign "MSFT100"
+    symlink /config/usb_gadget/g1/configs/b.1 /config/usb_gadget/g1/os_desc/b.1
+
+on fs
+    wait /dev/block/platform/soc/c0c4000.sdhci
+    symlink /dev/block/platform/soc/c0c4000.sdhci /dev/block/bootdevice
+
+# MTP over configfs. Recovery init.rc has configfs rules for adb,
+# sideload and fastboot only; its mtp,adb rule is for legacy android_usb.
+# Samsung 04E8:6860 = MTP+ADB, picked up by the Samsung Windows driver.
+on property:sys.usb.config=mtp,adb && property:sys.usb.ffs.ready=1 && property:sys.usb.configfs=1
+    write /config/usb_gadget/g1/UDC "none"
+    rm /config/usb_gadget/g1/configs/b.1/f1
+    rm /config/usb_gadget/g1/configs/b.1/f2
+    write /config/usb_gadget/g1/idProduct 0x6860
+    write /config/usb_gadget/g1/configs/b.1/strings/0x409/configuration "mtp_adb"
+    symlink /config/usb_gadget/g1/functions/mtp.gs0 /config/usb_gadget/g1/configs/b.1/f1
+    symlink /config/usb_gadget/g1/functions/ffs.adb /config/usb_gadget/g1/configs/b.1/f2
+    write /config/usb_gadget/g1/UDC ${sys.usb.controller}
+    setprop sys.usb.state ${sys.usb.config}
+
+on property:sys.usb.config=mtp && property:sys.usb.configfs=1
+    write /config/usb_gadget/g1/UDC "none"
+    rm /config/usb_gadget/g1/configs/b.1/f1
+    rm /config/usb_gadget/g1/configs/b.1/f2
+    write /config/usb_gadget/g1/idProduct 0x6860
+    write /config/usb_gadget/g1/configs/b.1/strings/0x409/configuration "mtp"
+    symlink /config/usb_gadget/g1/functions/mtp.gs0 /config/usb_gadget/g1/configs/b.1/f1
+    write /config/usb_gadget/g1/UDC ${sys.usb.controller}
+    setprop sys.usb.state ${sys.usb.config}
+
+# init.rc's none/adb rules only remove f1; drop our f2 too
+on property:sys.usb.config=none && property:sys.usb.configfs=1
+    rm /config/usb_gadget/g1/configs/b.1/f2
+
+on property:sys.usb.config=adb && property:sys.usb.configfs=1
+    rm /config/usb_gadget/g1/configs/b.1/f2
+
+on boot
+    # Flashlight: the LED hangs off the SM5705, driven by the Samsung camera
+    # node (led:torch_0/switch_0 accept writes but stay dark). OrangeFox wants
+    # an LED dir with "brightness", so fake one; no max_brightness -> "1".
+    mkdir /tmp/flashlight 0755
+    symlink /sys/class/camera/flash/rear_flash /tmp/flashlight/brightness
