@@ -123,6 +123,10 @@ TW_NO_FASTBOOT_BOOT := true
 TW_EXCLUDE_TWRPAPP := true
 TW_DEVICE_VERSION := HackOS-1
 
+# Battery %: read sysfs, this recovery runs no health HAL.
+TW_USE_LEGACY_BATTERY_SERVICES := true
+TW_CUSTOM_BATTERY_PATH := "/sys/class/power_supply/battery"
+
 # MTP: kernel has CONFIG_USB_CONFIGFS_F_MTP=y (mtp.gs0); the configfs
 # mtp,adb rules are in init.recovery.qcom.rc.
 TW_HAS_MTP := true
