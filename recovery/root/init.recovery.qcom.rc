@@ -7,6 +7,8 @@ on fs && property:sys.usb.configfs=1
     # Kernel f_mtp (CONFIG_USB_CONFIGFS_F_MTP) -> /dev/mtp_usb, which TWRP's
     # MtpServer opens. Recovery init.rc only creates ffs.adb/ffs.fastboot.
     mkdir /config/usb_gadget/g1/functions/mtp.gs0
+    # Samsung 4.4 kernels name the f_mtp_samsung node usb_mtp_gadget
+    symlink /dev/usb_mtp_gadget /dev/mtp_usb
     write /config/usb_gadget/g1/idVendor 0x04E8
     # 4.4.78 oopses in __ffs_func_bind_do_os_desc when adbd's MS OS
     # descriptors bind to a config not linked into os_desc (kernel BUG in init
