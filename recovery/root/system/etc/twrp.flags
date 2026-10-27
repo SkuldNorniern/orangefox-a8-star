@@ -1,0 +1,31 @@
+# Galaxy A8 Star (astarqlte) - TWRP flags (v1 format), applied on top of recovery.fstab
+# mount point    fstype  device                                         flags
+/boot            emmc    /dev/block/bootdevice/by-name/boot             flags=display="Boot";backup=1;flashimg=1
+/recovery        emmc    /dev/block/bootdevice/by-name/recovery         flags=display="Recovery";backup=1;flashimg=1
+/system          ext4    /dev/block/bootdevice/by-name/system           flags=display="System";backup=1;wipeingui
+/system_image    emmc    /dev/block/bootdevice/by-name/system           flags=display="System Image";backup=1;flashimg=1
+/vendor          ext4    /dev/block/bootdevice/by-name/vendor           flags=display="Vendor";backup=1;wipeingui
+/vendor_image    emmc    /dev/block/bootdevice/by-name/vendor           flags=display="Vendor Image";backup=1;flashimg=1
+/odm             ext4    /dev/block/bootdevice/by-name/odm              flags=display="ODM";backup=1
+/data            ext4    /dev/block/bootdevice/by-name/userdata         flags=encryptable=footer;length=-16384
+/cache           ext4    /dev/block/bootdevice/by-name/cache            flags=display="Cache";backup=1
+/preload         ext4    /dev/block/bootdevice/by-name/hidden           flags=display="Preload";backup=1;wipeingui
+/carrier         ext4    /dev/block/bootdevice/by-name/carrier          flags=display="Carrier";backup=1
+
+# Device-unique - back these up before anything else
+/efs             ext4    /dev/block/bootdevice/by-name/efs              flags=display="EFS";backup=1
+/sec_efs         ext4    /dev/block/bootdevice/by-name/sec_efs          flags=display="Sec EFS";backup=1
+/persist         ext4    /dev/block/bootdevice/by-name/persist          flags=display="Persist";backup=1
+/modemst1        emmc    /dev/block/bootdevice/by-name/modemst1         flags=display="Modem ST1";backup=1
+/modemst2        emmc    /dev/block/bootdevice/by-name/modemst2         flags=display="Modem ST2";backup=1
+/fsg             emmc    /dev/block/bootdevice/by-name/fsg              flags=display="FSG";backup=1
+/fsc             emmc    /dev/block/bootdevice/by-name/fsc              flags=display="FSC";backup=1
+/param           emmc    /dev/block/bootdevice/by-name/param            flags=display="Param";backup=1
+
+# Firmware
+/modem           emmc    /dev/block/bootdevice/by-name/apnhlos          flags=display="Modem (NON-HLOS)";backup=1;flashimg=1
+/misc            emmc    /dev/block/bootdevice/by-name/misc
+
+# Removable - SD is mmcblk1 (mmcblk0 is the internal eMMC)
+/external_sd     auto    /dev/block/mmcblk1p1    /dev/block/mmcblk1    flags=display="MicroSD";storage;wipeingui;removable
+/usb_otg         auto    /dev/block/sda1         /dev/block/sda        flags=display="USB-OTG";storage;wipeingui;removable

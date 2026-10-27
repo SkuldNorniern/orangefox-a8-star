@@ -1,0 +1,13 @@
+# Galaxy A8 Star (astarqlte) - recovery fstab (AOSP v2 format).
+# init needs this format: it reads /misc from here to write the bootloader
+# message, and without it "reboot recovery" is dropped. TWRP-only flags and
+# extra partitions are in twrp.flags.
+#<src>                                   <mnt_point>  <type>  <mnt_flags>               <fs_mgr_flags>
+/dev/block/bootdevice/by-name/system     /system      ext4    ro                        wait
+/dev/block/bootdevice/by-name/vendor     /vendor      ext4    ro                        wait
+/dev/block/bootdevice/by-name/odm        /odm         ext4    ro                        wait
+/dev/block/bootdevice/by-name/userdata   /data        ext4    noatime,nosuid,nodev      wait,encryptable=footer
+/dev/block/bootdevice/by-name/cache      /cache       ext4    noatime,nosuid,nodev      wait
+/dev/block/bootdevice/by-name/boot       /boot        emmc    defaults                  defaults
+/dev/block/bootdevice/by-name/recovery   /recovery    emmc    defaults                  defaults
+/dev/block/bootdevice/by-name/misc       /misc        emmc    defaults                  defaults
