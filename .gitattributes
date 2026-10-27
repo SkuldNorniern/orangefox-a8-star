@@ -1,0 +1,3 @@
+* text=auto eol=lf
+prebuilt/** binary
+*.img binary
