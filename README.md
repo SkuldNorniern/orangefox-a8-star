@@ -37,7 +37,7 @@ rm -rf out/target/product/astarqlte/recovery
 mka adbd recoveryimage
 ```
 
-`patches/apply.sh` patches pixelflinger (code cache) and adds the maintainer picture.
+`patches/apply.sh` applies `patches/*.patch` (pixelflinger code cache, MTP start EBUSY on the kernel `/dev/mtp_usb`) and adds the maintainer picture.
 Clear `out/.../recovery` before each build, old libs stay there otherwise.
 
 ## Flash
