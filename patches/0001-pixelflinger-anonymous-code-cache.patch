@@ -1,0 +1,26 @@
+diff --git a/libpixelflinger/codeflinger/CodeCache.cpp b/libpixelflinger/codeflinger/CodeCache.cpp
+index 32691a38..c5e9843a 100644
+--- a/libpixelflinger/codeflinger/CodeCache.cpp
++++ b/libpixelflinger/codeflinger/CodeCache.cpp
+@@ -83,18 +83,14 @@ const size_t kMaxCodeCacheCapacity = 1024 * 1024;
+ static mspace getMspace()
+ {
+     if (gExecutableStore == NULL) {
+-        int fd = ashmem_create_region("CodeFlinger code cache",
+-                                      kMaxCodeCacheCapacity);
+-        LOG_ALWAYS_FATAL_IF(fd < 0,
+-                            "Creating code cache, ashmem_create_region "
+-                            "failed with error '%s'", strerror(errno));
++        // HackOS: anonymous mapping; PROT_EXEC on an ashmem fd is refused
++        // by the Samsung SM-G885S kernel.
+         gExecutableStore = mmap(NULL, kMaxCodeCacheCapacity,
+                                 PROT_READ | PROT_WRITE | PROT_EXEC,
+-                                MAP_PRIVATE, fd, 0);
++                                MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+         LOG_ALWAYS_FATAL_IF(gExecutableStore == MAP_FAILED,
+                             "Creating code cache, mmap failed with error "
+                             "'%s'", strerror(errno));
+-        close(fd);
+         gMspace = create_mspace_with_base(gExecutableStore, kMaxCodeCacheCapacity,
+                                           /*locked=*/ false);
+         mspace_set_footprint_limit(gMspace, kMaxCodeCacheCapacity);
