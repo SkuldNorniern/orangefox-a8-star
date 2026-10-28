@@ -101,11 +101,10 @@ TW_THEME := portrait_hdpi
 TW_FRAMERATE := 60
 TW_Y_OFFSET := 0
 TW_H_OFFSET := 0
-# Brightness: on 4.4.78 backlight/panel is a dummy (max 0); the real control
-# is leds/lcd-backlight, max 365 (read on device).
+# Brightness: leds/lcd-backlight, max 255 on the 4.19 kernel (365 on 4.4).
 TW_BRIGHTNESS_PATH := "/sys/class/leds/lcd-backlight/brightness"
-TW_MAX_BRIGHTNESS := 365
-TW_DEFAULT_BRIGHTNESS := 200
+TW_MAX_BRIGHTNESS := 255
+TW_DEFAULT_BRIGHTNESS := 160
 # The S6E3FA7 cmd-mode panel only lights up after a blank/unblank cycle at
 # GUI start; without it the screen stays off.
 TW_SCREEN_BLANK_ON_BOOT := true
